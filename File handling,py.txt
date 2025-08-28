@@ -1,0 +1,52 @@
+import os
+import sys
+
+def modify_lines(lines):
+    """
+    Transform each line: 
+    1) Uppercase 
+    2) Prefix with line number
+    """
+    return [f"{i+1}: {line.strip().upper()}\n" 
+            for i, line in enumerate(lines)]
+
+def main():
+    # 1. Ask user for input filename
+    infile = input("Enter the filename to read: ").strip()
+    
+    # 2. Try opening input file with error handling
+    try:
+        with open(infile, 'r', encoding='utf-8') as f:
+            original_lines = f.readlines()
+    except FileNotFoundError:
+        print(f"Error: '{infile}' not found.")
+        sys.exit(1)
+    except PermissionError:
+        print(f"Error: Permission denied when reading '{infile}'.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error opening '{infile}': {e}")
+        sys.exit(1)
+    
+    # 3. Modify content
+    new_lines = modify_lines(original_lines)
+    
+    # 4. Prepare output filename
+    base, ext = os.path.splitext(infile)
+    outfile = f"{base}_modified{ext or '.txt'}"
+    
+    # 5. Write to new file with error handling
+    try:
+        with open(outfile, 'w', encoding='utf-8') as f:
+            f.writelines(new_lines)
+    except PermissionError:
+        print(f"Error: Permission denied when writing '{outfile}'.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error writing '{outfile}': {e}")
+        sys.exit(1)
+    
+    print(f"Success! Modified file saved as '{outfile}'.")
+
+if __name__ == "__main__":
+    main()
